@@ -13,7 +13,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello ASP.NET Core WebApplication API~~~");
+app.MapGet("/", () => "Hello, ASP.NET Core WebApplication API!");
 
 app.MapPost("/addschool", async (School school, MyDb db) =>
 {
