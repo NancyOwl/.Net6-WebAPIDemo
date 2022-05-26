@@ -1,8 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Models;
+using WebApplication1.DataContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<MyDb>(opt => opt.UseInMemoryDatabase("MyDbList"));
+//builder.Services.AddDbContext<MyDb>(opt => opt.UseInMemoryDatabase("MyDbList"));
+
+var connectionString = builder.Configuration.GetConnectionString("MyDb") ?? "Data Source=MyDb.db";
+builder.Services.AddDbContext<MyDb>(opt => opt.UseSqlite(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -53,24 +58,4 @@ app.MapDelete("/removeschool/{Id}", async (int Id, MyDb db)=>
 
 app.Run();
 
-
-
-public class School
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Logo { get; set; }
-    public string Address { get; set; }
-    public string Tel { get; set; }
-    public string Email { get; set; }
-}
-
-
-
-class MyDb : DbContext
-{
-    public MyDb(DbContextOptions<MyDb> options) : base(options)
-    { }
-
-    public DbSet<School> Schools => Set<School>();
-}
+public partial class Program { }
