@@ -4,10 +4,10 @@ using WebApplication1.DataContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddDbContext<MyDb>(opt => opt.UseInMemoryDatabase("MyDbList"));
+builder.Services.AddDbContext<MyDb>(opt => opt.UseInMemoryDatabase("MyDbList"));
 
-var connectionString = builder.Configuration.GetConnectionString("MyDb") ?? "Data Source=MyDb.db";
-builder.Services.AddDbContext<MyDb>(opt => opt.UseSqlite(connectionString));
+//var connectionString = builder.Configuration.GetConnectionString("MyDb") ?? "Data Source=MyDb.db";
+//builder.Services.AddDbContext<MyDb>(opt => opt.UseSqlite(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
