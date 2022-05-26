@@ -1,43 +1,45 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<MyDb>(opt => opt.UseInMemoryDatabase("MyDbList"));
+
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.MapGet("/", () => "Hello ASP.NET Core WebApplication API~~~");
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+app.MapPost("/addschool", async (School school, MyDb db) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    db.Schools.Add(school);
+    await db.SaveChangesAsync();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-       new WeatherForecast
-       (
-           DateTime.Now.AddDays(index),
-           Random.Shared.Next(-20, 55),
-           summaries[Random.Shared.Next(summaries.Length)]
-       ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    return Results.Created($"/addschool/{school.Id}", school);
+});
+
+app.MapGet("/schools", async (MyDb db) => await db.Schools.ToListAsync());
 
 app.Run();
 
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
+
+
+public class School
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Logo { get; set; }
+    public string Address { get; set; }
+    public string Tel { get; set; }
+    public string Email { get; set; }
+}
+
+
+
+class MyDb : DbContext
+{
+    public MyDb(DbContextOptions<MyDb> options) : base(options)
+    { }
+
+    public DbSet<School> Schools => Set<School>();
 }
